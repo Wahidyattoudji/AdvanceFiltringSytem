@@ -12,8 +12,9 @@ public static class QueryBuilder
         {
             foreach (var (field, condition) in request.Filter)
             {
-                var property = Expression.PropertyOrField(parameter, field);
+                var property = Expression.PropertyOrField(parameter, field); // x => x.Field
                 var constant = Expression.Constant(Convert.ChangeType(condition.Value, property.Type));
+                // Convert filter.value type to x.Field (property) type
 
                 Expression? comparison = condition.Operator.ToLower() switch
                 {
@@ -65,7 +66,7 @@ public static class QueryBuilder
 
     private static Expression BuildInExpression(MemberExpression property, object? value)
     {
-        var list = ((IEnumerable<object>)((IEnumerable)value)).Cast<object>().ToList();
+        var list = ((IEnumerable<object>)(value)).Cast<object>().ToList();
         var constant = Expression.Constant(list);
         var contains = typeof(Enumerable)
             .GetMethods()
